@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search History</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #000;
+            font-size: 2rem;
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* History List Styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 90%;
+            max-width: 800px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        li {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        span {
+            display: block;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Link to go back to search */
+        a {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #007acc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #005f99;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            ul {
+                padding: 15px;
+                width: 95%;
+            }
+
+            li {
+                font-size: 1rem;
+            }
+
+            a {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            ul {
+                padding: 10px;
+                width: 100%;
+            }
+
+            li {
+                font-size: 0.9rem;
+            }
+
+            a {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Search History</h1>
+    <ul>
+        <li th:each="history : ${history}">
+            <span th:text="${history.query}"></span> - 
+            <span th:text="${history.timestamp}"></span>
+        </li>
+    </ul>
+
+    <a href="/">Back to Search</a>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search App</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #000;
+            font-size: 2rem;
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Search Form */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #8fd3f4;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        form input[type="text"]:focus {
+            outline: none;
+            border-color: #84fab0;
+        }
+
+        form button {
+            padding: 10px 20px;
+            background: #84fab0;
+            color: #fff;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background: #66cdaa;
+        }
+
+        /* Results Container */
+        #results-container {
+            margin-top: 20px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            max-height: 400px;
+            animation: slideUp 0.8s ease;
+        }
+
+        #results-container div {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            animation: fadeIn 0.6s ease;
+        }
+
+        #results-container div:last-child {
+            border-bottom: none;
+        }
+
+        #results-container a {
+            color: #007acc;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        #results-container a:hover {
+            color: #005f99;
+            text-decoration: underline;
+        }
+
+        #results-container .url {
+            color: #006621;
+            font-size: 14px;
+            margin-top: 5px;
+            word-wrap: break-word;
+        }
+
+        #results-container .snippet {
+            color: #4d5156;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #results-container p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        /* Link to History */
+        a {
+            margin-top: 20px;
+            color: #000;
+            font-size: 1rem;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #d1eeee;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            form {
+                padding: 10px;
+            }
+
+            form button {
+                font-size: 0.9rem;
+            }
+
+            #results-container {
+                padding: 10px;
+                max-height: 300px;
+            }
+
+            #results-container div {
+                font-size: 0.9rem;
+            }
+
+            #results-container a {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            form input[type="text"] {
+                font-size: 0.9rem;
+            }
+
+            form button {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <script>
+    const apiKey = "AIzaSyCjLsuuBXtqIsMXY-uJ5DzfE__2Vw5vzog";
+    const searchEngineId = "17d88529d3257441c";
+
+    function fetchResults(query) {
+        const resultsContainer = document.getElementById("results-container");
+        resultsContainer.innerHTML = "";
+
+        // Send the query to the backend to store in the database
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: query })  // Send the query as JSON
+        })
+        .then(response => response.json())  // Optional: handle response if needed
+        .catch(err => {
+            console.error("Error saving query to database:", err);
+        });
+
+        // Fetch Google search results
+        const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${query}`;
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const div = document.createElement("div");
+                        div.innerHTML = `
+                            <a href="${item.link}" target="_blank">${item.title}</a>
+                            <div class="url">${item.link}</div>
+                            <p class="snippet">${item.snippet}</p>
+                        `;
+                        resultsContainer.appendChild(div);
+                    });
+                } else {
+                    resultsContainer.innerHTML = "<p>No results found.</p>";
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching results:", err);
+                resultsContainer.innerHTML = `<p>Error: ${err.message}</p>`;
+            });
+    }
+
+    </script>
+</head>
+<body>
+    <h1>Search Application</h1>
+    <form action="/search" method="post" onsubmit="fetchResults(document.getElementById('search-box').value); return false;">
+        <input type="text" id="search-box" name="query" placeholder="Search...">
+        <button type="submit">Search</button>
+    </form>
+    <div id="results-container"></div>
+    <a href="/history">View Search History</a>
+</body>
+</html>
